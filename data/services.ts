@@ -1,26 +1,26 @@
 export const services = [
   {
     title: "Rank Boost",
-    description: "Reach your desired rank safely and securely.",
-    price: "From €4.99",
+    description: "Reach your desired rank safely and quickly.",
+    price: "From $9.99",
     icon: "🏆",
   },
   {
     title: "Placement Matches",
-    description: "Win your placement games with a professional booster.",
-    price: "From €14.99",
+    description: "Start the season with the best possible placement.",
+    price: "From $19.99",
     icon: "🎯",
   },
   {
     title: "Season Rewards",
-    description: "Unlock every reward before the season ends.",
-    price: "From €7.99",
-    icon: "⭐",
+    description: "Unlock the rewards you want before the season ends.",
+    price: "From $14.99",
+    icon: "🎁",
   },
   {
     title: "Play With Booster",
     description: "Queue together with one of our experienced boosters.",
-    price: "From €9.99",
+    price: "From $12.99",
     icon: "🤝",
   },
 ];

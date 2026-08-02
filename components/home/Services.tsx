@@ -1,38 +1,42 @@
 import SectionTitle from "../ui/SectionTitle";
+import ServiceCard from "../ui/ServiceCard";
+import { services } from "@/data/services";
 
 export default function Services() {
   return (
-    <section className="px-10 py-24">
+    <section className="px-8 py-28 max-w-7xl mx-auto">
 
-      <SectionTitle text="Our Services" />
+      <div className="text-center">
 
-      <div className="grid grid-cols-3 gap-8 mt-12">
+        <p className="uppercase tracking-[0.3em] text-blue-500 font-semibold">
+          SERVICES
+        </p>
 
-        <div className="rounded-2xl bg-zinc-900 p-8">
-          <h3 className="text-2xl font-bold">Rank Boost</h3>
-
-          <p className="mt-4 text-gray-400">
-            Climb to your dream rank quickly and safely.
-          </p>
+        <div className="mt-3">
+          <SectionTitle text="Choose Your Boost" />
         </div>
 
-        <div className="rounded-2xl bg-zinc-900 p-8">
-          <h3 className="text-2xl font-bold">Coaching</h3>
-
-          <p className="mt-4 text-gray-400">
-            Improve your mechanics and game sense.
-          </p>
-        </div>
-
-        <div className="rounded-2xl bg-zinc-900 p-8">
-          <h3 className="text-2xl font-bold">Placement Matches</h3>
-
-          <p className="mt-4 text-gray-400">
-            Let our boosters secure the best possible placement.
-          </p>
-        </div>
+        <p className="text-gray-400 mt-6 max-w-2xl mx-auto">
+          Fast, safe and professional Rocket League boosting from verified
+          high-ranked players.
+        </p>
 
       </div>
+
+      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mt-16">
+
+        {services.map((service) => (
+          <ServiceCard
+            key={service.title}
+            title={service.title}
+            description={service.description}
+            price={service.price}
+            icon={service.icon}
+          />
+        ))}
+
+      </div>
+
     </section>
   );
 }
