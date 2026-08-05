@@ -1,29 +1,24 @@
-import Link from "next/link";
 import Image from "next/image";
 
 import { rocketLeagueRanks } from "@/data/rocketLeagueRanks";
 
-type PriceSummaryProps = {
+type OrderSummaryProps = {
   currentRank: string;
   desiredRank: string;
-  currentRankId: number;
-  desiredRankId: number;
   platform: string;
   gameMode: string;
   selectedExtras: string[];
   price: number;
 };
 
-export default function PriceSummary({
+export default function OrderSummary({
   currentRank,
   desiredRank,
-  currentRankId,
-  desiredRankId,
   platform,
   gameMode,
   selectedExtras,
   price,
-}: PriceSummaryProps) {
+}: OrderSummaryProps) {
   const current = rocketLeagueRanks.find(
     (rank) => rank.display === currentRank
   );
@@ -32,16 +27,8 @@ export default function PriceSummary({
     (rank) => rank.display === desiredRank
   );
 
-  const params = new URLSearchParams({
-    current: currentRankId.toString(),
-    desired: desiredRankId.toString(),
-    platform,
-    mode: gameMode,
-    extras: selectedExtras.join(","),
-  });
-
   return (
-    <div className="rounded-3xl border border-zinc-700 bg-zinc-800/70 p-8 backdrop-blur">
+    <>
       <h3 className="text-3xl font-bold">
         Order Summary
       </h3>
@@ -130,6 +117,30 @@ export default function PriceSummary({
 
         </div>
 
+        <div className="rounded-xl bg-zinc-900 p-4">
+
+          <p className="text-gray-500 text-sm">
+            Extras
+          </p>
+
+          {selectedExtras.length === 0 ? (
+            <p className="mt-2 font-semibold">
+              None
+            </p>
+          ) : (
+            <ul className="mt-2 space-y-1">
+
+              {selectedExtras.map((extra) => (
+                <li key={extra}>
+                  • {extra}
+                </li>
+              ))}
+
+            </ul>
+          )}
+
+        </div>
+
       </div>
 
       <div className="mt-10 border-t border-zinc-700 pt-8">
@@ -142,30 +153,7 @@ export default function PriceSummary({
           €{price.toFixed(2)}
         </p>
 
-        <Link
-          href={`/checkout?${params.toString()}`}
-          className="
-            mt-8
-            flex
-            w-full
-            items-center
-            justify-center
-            rounded-2xl
-            bg-blue-600
-            py-4
-            text-lg
-            font-bold
-            transition-all
-            duration-300
-            hover:scale-[1.02]
-            hover:bg-blue-500
-          "
-        >
-          Order Now
-        </Link>
-
       </div>
-
-    </div>
+    </>
   );
 }

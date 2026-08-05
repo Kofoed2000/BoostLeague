@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { rankPicker } from "@/data/rankPicker";
+import { rankHierarchy } from "@/data/rankHierarchy";
 
 type RankStepProps = {
   onSelect: (rank: string) => void;
@@ -12,7 +12,7 @@ export default function RankStep({
 }: RankStepProps) {
   return (
     <div className="space-y-3">
-      {rankPicker.map((rank) => (
+      {rankHierarchy.map((rank) => (
         <button
           key={rank.name}
           type="button"

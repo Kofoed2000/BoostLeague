@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { rankPicker } from "@/data/rankPicker";
+import { rankHierarchy } from "@/data/rankHierarchy";
 
 type TierStepProps = {
   rankGroup: string;
@@ -14,7 +14,7 @@ export default function TierStep({
   onBack,
   onSelect,
 }: TierStepProps) {
-  const group = rankPicker.find(
+  const group = rankHierarchy.find(
     (rank) => rank.name === rankGroup
   );
 

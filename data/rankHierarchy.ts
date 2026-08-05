@@ -1,4 +1,4 @@
-export const rankPicker = [
+export const rankHierarchy = [
   {
     name: "Bronze",
     icon: "/ranks/Bronze1_rank_icon.webp",

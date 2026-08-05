@@ -163,8 +163,11 @@ export default function BoostCalculator() {
             <PriceSummary
               currentRank={currentRank.display}
               desiredRank={desiredRank.display}
+              currentRankId={calculator.currentRankId}
+              desiredRankId={calculator.desiredRankId}
               platform={calculator.platform.name}
               gameMode={calculator.gameMode.name}
+              selectedExtras={calculator.selectedExtras}
               price={totalPrice}
             />
 
