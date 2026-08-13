@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 
 import SelectionModal from "./SelectionModal";
 
@@ -17,6 +18,28 @@ type SelectionPickerProps = {
   items: SelectionItem[];
   onChange: (item: SelectionItem) => void;
 };
+
+function SelectionIcon({ icon, alt }: { icon: string; alt: string }) {
+  const isImage = icon.startsWith("/");
+
+  if (isImage) {
+    return (
+      <Image
+        src={icon}
+        alt={alt}
+        width={40}
+        height={40}
+        className="h-10 w-10 object-contain"
+      />
+    );
+  }
+
+  return (
+    <span className="text-3xl">
+      {icon}
+    </span>
+  );
+}
 
 export default function SelectionPicker({
   title,
@@ -49,9 +72,10 @@ export default function SelectionPicker({
       >
         <div className="flex items-center gap-4">
 
-          <span className="text-3xl">
-            {value.icon}
-          </span>
+          <SelectionIcon
+            icon={value.icon}
+            alt={value.title}
+          />
 
           <div className="text-left">
 
@@ -124,9 +148,10 @@ export default function SelectionPicker({
               >
                 <div className="flex items-center gap-4">
 
-                  <span className="text-3xl">
-                    {item.icon}
-                  </span>
+                  <SelectionIcon
+                    icon={item.icon}
+                    alt={item.title}
+                  />
 
                   <div className="text-left">
 

@@ -13,7 +13,7 @@ export const platforms: Platform[] = [
   {
     id: "epic",
     name: "Epic Games",
-    icon: "🎮",
+    icon: "🖥️",
   },
   {
     id: "playstation",
@@ -23,11 +23,11 @@ export const platforms: Platform[] = [
   {
     id: "xbox",
     name: "Xbox",
-    icon: "🟩",
+    icon: "🎮",
   },
   {
     id: "switch",
     name: "Nintendo Switch",
-    icon: "🔴",
+    icon: "🎮",
   },
 ];
