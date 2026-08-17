@@ -146,6 +146,26 @@ export default function BoostCalculator() {
       rank.name === calculator.tournamentRank
   );
 
+  const currentRank =
+  rocketLeagueRanks.find(
+    (rank) =>
+      rank.id ===
+      calculator.currentRankId
+  );
+
+const currentRankIndex =
+  rankHierarchy.findIndex(
+    (rank) =>
+      rank.name ===
+      currentRank?.rank
+  );
+
+const availableRewardRanks =
+  rankHierarchy.slice(
+    0,
+    currentRankIndex + 1
+  );
+
   const selectedPlacementRank = rankHierarchy.find(
   (rank) =>
     rank.tiers.includes(
@@ -547,7 +567,21 @@ export default function BoostCalculator() {
                 <>
 
                   <div>
+                    <div>
+                        <label className="mb-3 block text-lg font-semibold">
+                          Current Rank
+                        </label>
 
+                        <RankPicker
+                          value={calculator.currentRankId}
+                          onChange={(value) =>
+                            setCalculator((prev) => ({
+                            ...prev,
+                            currentRankId: value,
+                        }))
+                      }
+                    />
+                  </div>
                     <label className="mb-3 block text-lg font-semibold">
                       Current Reward Rank
                     </label>
@@ -584,7 +618,7 @@ export default function BoostCalculator() {
                         "
                       >
 
-                        {rankHierarchy.map(
+                        {availableRewardRanks.map(
                           (rank) => (
                             <option
                               key={rank.name}
@@ -704,7 +738,7 @@ export default function BoostCalculator() {
                         "
                       >
 
-                        {rankHierarchy.map(
+                        {availableRewardRanks.map(
                           (rank) => (
                             <option
                               key={rank.name}
@@ -823,7 +857,7 @@ export default function BoostCalculator() {
                         "
                       >
 
-                        {rankHierarchy.map((rank) =>
+                        {availableRewardRanks.map((rank) =>
                           rank.tiers.map((tier) => (
                             <option
                               key={tier}
@@ -967,6 +1001,9 @@ export default function BoostCalculator() {
                     calculator.selectedExtras
                   }
                   onToggle={toggleExtra}
+                  gameMode={
+                    calculator.gameMode.name
+                  }
                 />
               )}
 

@@ -1,6 +1,8 @@
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 
+import StatusButtons from "./StatusButtons";
+
 type Props = {
   params: Promise<{
     id: string;
@@ -27,96 +29,106 @@ export default async function OrderPage({
         {order.orderNumber}
       </h1>
 
-      <div className="space-y-3">
+      <div className="space-y-6">
 
-        <p>
-          <strong>Status:</strong>{" "}
-          {order.status}
-        </p>
+        <div>
+          <p className="mb-3">
+            <strong>Status:</strong>{" "}
+            {order.status}
+          </p>
 
-        <p>
-          <strong>Service:</strong>{" "}
-          {order.serviceType}
-        </p>
+          <StatusButtons
+            orderId={order.id}
+            currentStatus={order.status}
+          />
+        </div>
 
-        <p>
-          <strong>Email:</strong>{" "}
-          {order.email}
-        </p>
+        <div className="space-y-3">
 
-        <p>
-          <strong>Discord:</strong>{" "}
-          {order.discord}
-        </p>
+          <p>
+            <strong>Service:</strong>{" "}
+            {order.serviceType}
+          </p>
 
-        <p>
-          <strong>Platform:</strong>{" "}
-          {order.platform}
-        </p>
+          <p>
+            <strong>Email:</strong>{" "}
+            {order.email}
+          </p>
 
-        <p>
-          <strong>Gamemode:</strong>{" "}
-          {order.gameMode}
-        </p>
+          <p>
+            <strong>Discord:</strong>{" "}
+            {order.discord}
+          </p>
 
-        <p>
-          <strong>Price:</strong> €
-          {order.price}
-        </p>
+          <p>
+            <strong>Platform:</strong>{" "}
+            {order.platform}
+          </p>
 
-        <p>
-          <strong>Current Rank:</strong>{" "}
-          {order.currentRank ?? "-"}
-        </p>
+          <p>
+            <strong>Gamemode:</strong>{" "}
+            {order.gameMode}
+          </p>
 
-        <p>
-          <strong>Desired Rank:</strong>{" "}
-          {order.desiredRank ?? "-"}
-        </p>
+          <p>
+            <strong>Price:</strong> €
+            {order.price}
+          </p>
 
-        <p>
-          <strong>Reward Rank:</strong>{" "}
-          {order.rewardRank ?? "-"}
-        </p>
+          <p>
+            <strong>Current Rank:</strong>{" "}
+            {order.currentRank ?? "-"}
+          </p>
 
-        <p>
-          <strong>Reward Wins:</strong>{" "}
-          {order.rewardWins ?? "-"}
-        </p>
+          <p>
+            <strong>Desired Rank:</strong>{" "}
+            {order.desiredRank ?? "-"}
+          </p>
 
-        <p>
-          <strong>Placement Rank:</strong>{" "}
-          {order.placementRank ?? "-"}
-        </p>
+          <p>
+            <strong>Reward Rank:</strong>{" "}
+            {order.rewardRank ?? "-"}
+          </p>
 
-        <p>
-          <strong>Placement Matches:</strong>{" "}
-          {order.placementMatches ??
-            "-"}
-        </p>
+          <p>
+            <strong>Reward Wins:</strong>{" "}
+            {order.rewardWins ?? "-"}
+          </p>
 
-        <p>
-          <strong>Tournament Rank:</strong>{" "}
-          {order.tournamentRank ??
-            "-"}
-        </p>
+          <p>
+            <strong>Placement Rank:</strong>{" "}
+            {order.placementRank ?? "-"}
+          </p>
 
-        <p>
-          <strong>Tournament Wins:</strong>{" "}
-          {order.tournamentWins ??
-            "-"}
-        </p>
+          <p>
+            <strong>Placement Matches:</strong>{" "}
+            {order.placementMatches ??
+              "-"}
+          </p>
 
-        <p>
-          <strong>Extras:</strong>{" "}
-          {order.extras ?? "-"}
-        </p>
+          <p>
+            <strong>Tournament Rank:</strong>{" "}
+            {order.tournamentRank ??
+              "-"}
+          </p>
 
-        <p>
-          <strong>Notes:</strong>{" "}
-          {order.notes ?? "-"}
-        </p>
+          <p>
+            <strong>Tournament Wins:</strong>{" "}
+            {order.tournamentWins ??
+              "-"}
+          </p>
 
+          <p>
+            <strong>Extras:</strong>{" "}
+            {order.extras ?? "-"}
+          </p>
+
+          <p>
+            <strong>Notes:</strong>{" "}
+            {order.notes ?? "-"}
+          </p>
+
+        </div>
       </div>
     </div>
   );

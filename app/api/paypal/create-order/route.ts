@@ -348,6 +348,9 @@ if (serviceType === "rank-boost") {
 
 if (serviceType === "reward-wins") {
   Object.assign(orderData, {
+    currentRank:
+      currentRank?.display ?? null,
+
     rewardRank:
       rewardRank || null,
 
