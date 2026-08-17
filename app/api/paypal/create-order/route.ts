@@ -359,7 +359,7 @@ if (serviceType === "reward-wins") {
   });
 }
 
-if (serviceType === "placements-boost") {
+if (serviceType === "placement-boost") {
   Object.assign(orderData, {
     placementRank:
       placementRank || null,
@@ -369,7 +369,7 @@ if (serviceType === "placements-boost") {
   });
 }
 
-if (serviceType === "tournaments-wins") {
+if (serviceType === "tournament-wins") {
   Object.assign(orderData, {
     tournamentRank:
       tournamentRank || null,

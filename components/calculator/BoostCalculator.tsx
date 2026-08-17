@@ -1,5 +1,5 @@
 "use client";
-
+import { rocketLeagueRanks } from "@/data/rocketLeagueRanks";
 import { useState } from "react";
 
 import RankPicker from "./RankPicker";
@@ -141,30 +141,43 @@ export default function BoostCalculator() {
     (rank) => rank.name === calculator.rewardRank
   );
 
+  const rewardRankIndex =
+  rankHierarchy.findIndex(
+    (rank) =>
+      rank.name === calculator.rewardRank
+  );
+
+const desiredRewardRank =
+  rankHierarchy[
+    Math.min(
+      rewardRankIndex + 1,
+      rankHierarchy.length - 1
+    )
+  ];
+
   const selectedTournamentRank = rankHierarchy.find(
     (rank) =>
       rank.name === calculator.tournamentRank
   );
 
-  const currentRank =
+  const rewardCurrentRank =
   rocketLeagueRanks.find(
     (rank) =>
-      rank.id ===
-      calculator.currentRankId
+      rank.id === calculator.currentRankId
   );
 
 const currentRankIndex =
-  rankHierarchy.findIndex(
-    (rank) =>
-      rank.name ===
-      currentRank?.rank
+  rankHierarchy.findIndex((rank) =>
+    currentRank?.rank.startsWith(rank.name)
   );
 
 const availableRewardRanks =
-  rankHierarchy.slice(
-    0,
-    currentRankIndex + 1
-  );
+  currentRankIndex >= 0
+    ? rankHierarchy.slice(
+        0,
+        currentRankIndex + 1
+      )
+    : rankHierarchy;
 
   const selectedPlacementRank = rankHierarchy.find(
   (rank) =>
@@ -540,8 +553,9 @@ const availableRewardRanks =
                     </label>
 
                     <RankPicker
-                      value={
-                        calculator.desiredRankId
+                      value={calculator.desiredRankId}
+                      minimumRankId={
+                        calculator.currentRankId
                       }
                       onChange={(value) =>
                         setCalculator(
@@ -738,16 +752,14 @@ const availableRewardRanks =
                         "
                       >
 
-                        {availableRewardRanks.map(
-                          (rank) => (
-                            <option
-                              key={rank.name}
-                              value={rank.name}
-                            >
-                              {rank.name}
-                            </option>
-                          )
-                        )}
+                        {rankHierarchy.map((rank) => (
+                          <option
+                            key={rank.name}
+                            value={rank.name}
+                          >
+                            {rank.name}
+                          </option>
+                        ))}
 
                       </select>
 
@@ -857,7 +869,7 @@ const availableRewardRanks =
                         "
                       >
 
-                        {availableRewardRanks.map((rank) =>
+                        {rankHierarchy.map((rank) =>
                           rank.tiers.map((tier) => (
                             <option
                               key={tier}
@@ -1034,6 +1046,12 @@ const availableRewardRanks =
 
               rewardRank={
                 calculator.rewardRank
+              }
+              desiredRewardRank={
+                desiredRewardRank?.name ?? ""
+              }
+              desiredRewardRankIcon={
+                desiredRewardRank?.icon ?? ""
               }
               rewardWins={
                 calculator.rewardWins

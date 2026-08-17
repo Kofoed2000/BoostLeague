@@ -10,11 +10,13 @@ import RankModal from "./RankModal";
 type RankPickerProps = {
   value: number;
   onChange: (value: number) => void;
+  minimumRankId?: number;
 };
 
 export default function RankPicker({
   value,
   onChange,
+  minimumRankId,
 }: RankPickerProps) {
   const [open, setOpen] = useState(false);
 
@@ -89,6 +91,7 @@ export default function RankPicker({
         value={value}
         onChange={onChange}
         onClose={() => setOpen(false)}
+        minimumRankId={minimumRankId}
       />
     </>
   );

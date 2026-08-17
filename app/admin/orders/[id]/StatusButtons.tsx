@@ -10,6 +10,14 @@ const statuses = [
   "cancelled",
 ];
 
+const statusColors = {
+  pending: "bg-yellow-600",
+  paid: "bg-blue-600",
+  "in-progress": "bg-purple-600",
+  completed: "bg-green-600",
+  cancelled: "bg-red-600",
+};
+
 type Props = {
   orderId: string;
   currentStatus: string;
@@ -51,9 +59,11 @@ export default function StatusButtons({
           onClick={() =>
             updateStatus(status)
           }
-          className={`rounded-lg px-4 py-2 font-medium transition ${
+          className={`rounded-lg px-4 py-2 font-medium text-white transition ${
             currentStatus === status
-              ? "bg-green-600"
+              ? statusColors[
+                  status as keyof typeof statusColors
+                ]
               : "bg-zinc-800 hover:bg-zinc-700"
           }`}
         >

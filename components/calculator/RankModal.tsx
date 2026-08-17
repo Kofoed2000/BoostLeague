@@ -3,7 +3,7 @@
 import { useState } from "react";
 
 import { rocketLeagueRanks } from "@/data/rocketLeagueRanks";
-
+import { rankHierarchy } from "@/data/rankHierarchy";
 import RankStep from "./RankStep";
 import TierStep from "./TierStep";
 import DivisionStep from "./DivisionStep";
@@ -15,6 +15,7 @@ type RankModalProps = {
   value: number;
   onChange: (value: number) => void;
   onClose: () => void;
+  minimumRankId?: number;
 };
 
 export default function RankModal({
@@ -22,6 +23,7 @@ export default function RankModal({
   value,
   onChange,
   onClose,
+  minimumRankId,
 }: RankModalProps) {
   const [step, setStep] = useState<Step>("rank");
 
@@ -30,6 +32,23 @@ export default function RankModal({
 
   const [selectedTier, setSelectedTier] =
     useState("");
+
+  const availableRanks =
+  minimumRankId === undefined
+    ? rocketLeagueRanks
+    : rocketLeagueRanks.filter(
+        (rank) =>
+          rank.id > minimumRankId
+      );
+
+  const availableRankNames =
+  rankHierarchy
+    .filter((group) =>
+      availableRanks.some((rank) =>
+        rank.rank.startsWith(group.name)
+      )
+    )
+    .map((group) => group.name);
 
   function closeModal() {
     setStep("rank");
@@ -42,7 +61,7 @@ export default function RankModal({
   function handleDivisionSelect(
     division: string
   ) {
-    const rank = rocketLeagueRanks.find(
+    const rank = availableRanks.find(
       (rank) =>
         rank.rank === selectedTier &&
         rank.division === division
@@ -138,6 +157,9 @@ export default function RankModal({
 
             {step === "rank" && (
               <RankStep
+                availableRankNames={
+                  availableRankNames
+                }
                 onSelect={(rank) => {
                   setSelectedRankGroup(rank);
                   setStep("tier");
@@ -157,7 +179,7 @@ export default function RankModal({
                     "Supersonic Legend"
                   ) {
                     const ssl =
-                      rocketLeagueRanks.find(
+                      availableRanks.find(
                         (rank) =>
                           rank.rank ===
                           "Supersonic Legend"

@@ -5,14 +5,25 @@ import { rankHierarchy } from "@/data/rankHierarchy";
 
 type RankStepProps = {
   onSelect: (rank: string) => void;
+  availableRankNames?: string[];
 };
 
 export default function RankStep({
   onSelect,
+  availableRankNames,
 }: RankStepProps) {
+  const ranksToShow =
+    availableRankNames
+      ? rankHierarchy.filter((rank) =>
+          availableRankNames.includes(
+            rank.name
+          )
+        )
+      : rankHierarchy;
+
   return (
     <div className="space-y-3">
-      {rankHierarchy.map((rank) => (
+      {ranksToShow.map((rank) => (
         <button
           key={rank.name}
           type="button"
@@ -34,7 +45,6 @@ export default function RankStep({
           "
         >
           <div className="flex items-center gap-4">
-
             <Image
               src={rank.icon}
               alt={rank.name}
@@ -45,7 +55,6 @@ export default function RankStep({
             <span className="text-lg font-semibold">
               {rank.name}
             </span>
-
           </div>
 
           <span className="text-gray-500 text-xl">
