@@ -147,9 +147,11 @@ export default function BoostCalculator() {
   );
 
   const selectedPlacementRank = rankHierarchy.find(
-    (rank) =>
-      rank.name === calculator.placementRank
-  );
+  (rank) =>
+    rank.tiers.includes(
+      calculator.placementRank
+    )
+);
 
   /*
    * -----------------------------------------
@@ -821,15 +823,15 @@ export default function BoostCalculator() {
                         "
                       >
 
-                        {rankHierarchy.map(
-                          (rank) => (
+                        {rankHierarchy.map((rank) =>
+                          rank.tiers.map((tier) => (
                             <option
-                              key={rank.name}
-                              value={rank.name}
+                              key={tier}
+                              value={tier}
                             >
-                              {rank.name}
+                              {tier}
                             </option>
-                          )
+                          ))
                         )}
 
                       </select>

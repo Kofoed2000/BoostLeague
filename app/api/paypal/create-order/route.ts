@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 
+import { prisma } from "@/lib/prisma";
+
 import { extras } from "@/data/extras";
 import {
   calculatePrice,
@@ -11,7 +13,8 @@ const PAYPAL_API_URL =
 
 async function getPayPalAccessToken() {
   const clientId = process.env.PAYPAL_CLIENT_ID;
-  const clientSecret = process.env.PAYPAL_CLIENT_SECRET;
+  const clientSecret =
+    process.env.PAYPAL_CLIENT_SECRET;
 
   if (!clientId || !clientSecret) {
     throw new Error(
@@ -72,64 +75,65 @@ export async function POST(request: Request) {
     }
 
     const {
+      serviceType,
+
       currentRankId,
       desiredRankId,
+
+      rewardRank,
+      rewardWins,
+
+      tournamentRank,
+      tournamentWins,
+
+      placementRank,
+      placementMatches,
+
       platform,
       gameMode,
+
       extras: selectedExtras,
+
       orderInformation,
       contactInformation,
     } = checkout;
 
-    /*
-     * Validate ranks on the server.
-     */
+    const currentRank =
+      getRankById(currentRankId);
 
-    const currentRank = getRankById(currentRankId);
-    const desiredRank = getRankById(desiredRankId);
-
-    if (!currentRank || !desiredRank) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: "Invalid rank selection.",
-        },
-        {
-          status: 400,
-        }
-      );
-    }
-
-    if (desiredRankId <= currentRankId) {
-      return NextResponse.json(
-        {
-          success: false,
-          message:
-            "Desired rank must be higher than current rank.",
-        },
-        {
-          status: 400,
-        }
-      );
-    }
-
-    /*
-     * Validate required customer information.
-     */
+    const desiredRank =
+      getRankById(desiredRankId);
 
     if (
-      !orderInformation?.inGameUsername?.trim()
+      serviceType === "rank-boost"
     ) {
-      return NextResponse.json(
-        {
-          success: false,
-          message:
-            "In-game username is required.",
-        },
-        {
-          status: 400,
-        }
-      );
+      if (!currentRank || !desiredRank) {
+        return NextResponse.json(
+          {
+            success: false,
+            message:
+              "Invalid rank selection.",
+          },
+          {
+            status: 400,
+          }
+        );
+      }
+
+      if (
+        desiredRankId <= currentRankId
+      ) {
+        return NextResponse.json(
+          {
+            success: false,
+            message:
+              "Desired rank must be higher than current rank.",
+          },
+          {
+            status: 400,
+          }
+        );
+      }
     }
 
     if (
@@ -146,41 +150,14 @@ export async function POST(request: Request) {
       );
     }
 
-    /*
-     * Calculate the price on the server.
-     *
-     * We deliberately do NOT trust a price
-     * sent from the browser.
-     */
-
-    const basePrice = calculatePrice(
-      currentRankId,
-      desiredRankId
-    );
-
-    const multiplier = (
-      Array.isArray(selectedExtras)
-        ? selectedExtras
-        : []
-    ).reduce((total: number, extraId: string) => {
-      const extra = extras.find(
-        (item) => item.id === extraId
-      );
-
-      if (!extra) {
-        return total;
-      }
-
-      return total * extra.priceMultiplier;
-    }, 1);
-
-    const totalPrice = basePrice * multiplier;
-
-    if (totalPrice <= 0) {
+    if (
+      !contactInformation?.discord?.trim()
+    ) {
       return NextResponse.json(
         {
           success: false,
-          message: "Invalid order price.",
+          message:
+            "Discord username is required.",
         },
         {
           status: 400,
@@ -188,60 +165,117 @@ export async function POST(request: Request) {
       );
     }
 
-    /*
-     * Get PayPal access token.
-     */
+    let totalPrice = 0;
+
+    if (
+      serviceType === "rank-boost"
+    ) {
+      const basePrice =
+        calculatePrice(
+          currentRankId,
+          desiredRankId
+        );
+
+      const multiplier = (
+        Array.isArray(selectedExtras)
+          ? selectedExtras
+          : []
+      ).reduce(
+        (
+          total: number,
+          extraId: string
+        ) => {
+          const extra = extras.find(
+            (item) =>
+              item.id === extraId
+          );
+
+          if (!extra) {
+            return total;
+          }
+
+          return (
+            total *
+            extra.priceMultiplier
+          );
+        },
+        1
+      );
+
+      totalPrice =
+        basePrice * multiplier;
+    } else {
+      totalPrice =
+        Number(checkout.price) || 0;
+    }
+
+    if (totalPrice <= 0) {
+      return NextResponse.json(
+        {
+          success: false,
+          message:
+            "Invalid order price.",
+        },
+        {
+          status: 400,
+        }
+      );
+    }
 
     const accessToken =
       await getPayPalAccessToken();
 
-    /*
-     * Create the PayPal order.
-     */
-
-    const paypalResponse = await fetch(
-      `${PAYPAL_API_URL}/v2/checkout/orders`,
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "application/json",
-          Accept: "application/json",
-          "PayPal-Request-Id":
-            crypto.randomUUID(),
-        },
-        body: JSON.stringify({
-          intent: "CAPTURE",
-
-          purchase_units: [
-            {
-              description: `Rocket League Boost - ${currentRank.display} to ${desiredRank.display}`,
-
-              custom_id: `${currentRankId}-${desiredRankId}`,
-
-              amount: {
-                currency_code: "EUR",
-                value: totalPrice.toFixed(2),
-              },
-            },
-          ],
-
-          application_context: {
-            brand_name: "BoostLeague",
-
-            user_action:
-              "PAY_NOW",
-
-            return_url:
-              `${process.env.NEXT_PUBLIC_BASE_URL}/checkout/success`,
-
-            cancel_url:
-              `${process.env.NEXT_PUBLIC_BASE_URL}/checkout`,
+    const paypalResponse =
+      await fetch(
+        `${PAYPAL_API_URL}/v2/checkout/orders`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type":
+              "application/json",
+            Accept:
+              "application/json",
+            "PayPal-Request-Id":
+              crypto.randomUUID(),
           },
-        }),
-        cache: "no-store",
-      }
-    );
+          body: JSON.stringify({
+            intent: "CAPTURE",
+
+            purchase_units: [
+              {
+                description:
+                  serviceType ===
+                  "rank-boost"
+                    ? `Rocket League Boost - ${currentRank?.display} to ${desiredRank?.display}`
+                    : `Rocket League ${serviceType}`,
+
+                amount: {
+                  currency_code:
+                    "EUR",
+                  value:
+                    totalPrice.toFixed(
+                      2
+                    ),
+                },
+              },
+            ],
+
+            application_context: {
+              brand_name:
+                "BoostLeague",
+
+              user_action:
+                "PAY_NOW",
+
+              return_url: `${process.env.NEXT_PUBLIC_BASE_URL}/checkout/success`,
+
+              cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/checkout`,
+            },
+          }),
+          cache: "no-store",
+        }
+      );
 
     const paypalData =
       await paypalResponse.json();
@@ -259,14 +293,97 @@ export async function POST(request: Request) {
             "PayPal could not create the order.",
         },
         {
-          status: paypalResponse.status,
+          status:
+            paypalResponse.status,
         }
       );
     }
 
+    const orderNumber = `BL-${Date.now()}`;
+
+const orderData: any = {
+  orderNumber,
+
+  serviceType,
+
+  email:
+    contactInformation.email,
+
+  discord:
+    contactInformation.discord,
+
+  platform,
+
+  gameMode:
+    gameMode || null,
+
+  extras:
+    selectedExtras?.length
+      ? selectedExtras.join(",")
+      : null,
+
+  notes:
+    orderInformation?.notes?.trim() ||
+    null,
+
+  price: totalPrice,
+
+  paypalOrderId:
+    paypalData.id,
+
+  status: "pending",
+};
+
+if (serviceType === "rank-boost") {
+  Object.assign(orderData, {
+    currentRank:
+      currentRank?.display ??
+      null,
+
+    desiredRank:
+      desiredRank?.display ??
+      null,
+  });
+}
+
+if (serviceType === "reward-wins") {
+  Object.assign(orderData, {
+    rewardRank:
+      rewardRank || null,
+
+    rewardWins:
+      rewardWins || null,
+  });
+}
+
+if (serviceType === "placements-boost") {
+  Object.assign(orderData, {
+    placementRank:
+      placementRank || null,
+
+    placementMatches:
+      placementMatches || null,
+  });
+}
+
+if (serviceType === "tournaments-wins") {
+  Object.assign(orderData, {
+    tournamentRank:
+      tournamentRank || null,
+
+    tournamentWins:
+      tournamentWins || null,
+  });
+}
+
+await prisma.order.create({
+  data: orderData,
+});
+
     return NextResponse.json({
       success: true,
       orderID: paypalData.id,
+      orderNumber,
       price: totalPrice,
     });
   } catch (error) {

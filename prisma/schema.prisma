@@ -1,0 +1,45 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Order {
+  id            String   @id @default(cuid())
+
+  orderNumber   String   @unique
+
+  serviceType   String
+
+  email         String
+  discord       String
+
+  platform      String
+  gameMode      String?
+
+  currentRank   String?
+  desiredRank   String?
+
+  rewardRank    String?
+  rewardWins    Int?
+
+  tournamentRank String?
+  tournamentWins Int?
+
+  placementRank String?
+  placementMatches Int?
+
+  extras        String?
+  notes         String?
+
+  price         Float
+
+  status        String   @default("pending")
+
+  paypalOrderId String?  @unique
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}

@@ -1,29 +1,36 @@
 export const platformInformation = {
   Steam: {
-    usernameLabel: "Steam Friend Code",
-    placeholder: "Enter your Steam Friend Code",
+    usernameLabel: "Login Information",
+    placeholder: "Enter your Steam login information",
     helperText:
-      "You can find your Friend Code in Steam → Friends → Add a Friend.",
+      "Your account credentials are only used to complete your boost and are never shared with third parties.",
   },
 
   "Epic Games": {
-    usernameLabel: "Epic Games Username",
-    placeholder: "Enter your Epic Games Username",
+    usernameLabel: "Login Information",
+    placeholder: "Enter your Epic Games login information",
     helperText:
-      "Use your Epic Games display name exactly as it appears in-game.",
+      "Your account credentials are only used to complete your boost and are never shared with third parties.",
   },
 
   PlayStation: {
-    usernameLabel: "PSN Username",
-    placeholder: "Enter your PSN Username",
+    usernameLabel: "Login Information",
+    placeholder: "Enter your PlayStation login information",
     helperText:
-      "Enter the PlayStation Network username you use in Rocket League.",
+      "Your account credentials are only used to complete your boost and are never shared with third parties.",
   },
 
   Xbox: {
-    usernameLabel: "Xbox Gamertag",
-    placeholder: "Enter your Xbox Gamertag",
+    usernameLabel: "Login Information",
+    placeholder: "Enter your Xbox login information",
     helperText:
-      "Enter your Xbox Gamertag exactly as shown on your Xbox profile.",
+      "Your account credentials are only used to complete your boost and are never shared with third parties.",
+  },
+
+  "Nintendo Switch": {
+    usernameLabel: "Login Information",
+    placeholder: "Enter your Nintendo login information",
+    helperText:
+      "Your account credentials are only used to complete your boost and are never shared with third parties.",
   },
 } as const;

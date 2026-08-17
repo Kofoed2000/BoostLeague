@@ -1,10 +1,14 @@
 import { NextResponse } from "next/server";
 
+import { prisma } from "@/lib/prisma";
+
 const PAYPAL_API_URL =
   "https://api-m.sandbox.paypal.com";
 
 async function getPayPalAccessToken() {
-  const clientId = process.env.PAYPAL_CLIENT_ID;
+  const clientId =
+    process.env.PAYPAL_CLIENT_ID;
+
   const clientSecret =
     process.env.PAYPAL_CLIENT_SECRET;
 
@@ -33,7 +37,8 @@ async function getPayPalAccessToken() {
   );
 
   if (!response.ok) {
-    const error = await response.text();
+    const error =
+      await response.text();
 
     console.error(
       "PayPal authentication failed:",
@@ -45,25 +50,32 @@ async function getPayPalAccessToken() {
     );
   }
 
-  const data = await response.json();
+  const data =
+    await response.json();
 
   return data.access_token;
 }
 
-export async function POST(request: Request) {
+export async function POST(
+  request: Request
+) {
   try {
-    const body = await request.json();
+    const body =
+      await request.json();
 
-    const orderID = body?.orderID;
+    const orderID =
+      body?.orderID;
 
     if (
-      typeof orderID !== "string" ||
+      typeof orderID !==
+        "string" ||
       !orderID.trim()
     ) {
       return NextResponse.json(
         {
           success: false,
-          message: "PayPal order ID is missing.",
+          message:
+            "PayPal order ID is missing.",
         },
         {
           status: 400,
@@ -80,8 +92,10 @@ export async function POST(request: Request) {
         method: "POST",
         headers: {
           Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "application/json",
-          Accept: "application/json",
+          "Content-Type":
+            "application/json",
+          Accept:
+            "application/json",
           "PayPal-Request-Id":
             crypto.randomUUID(),
         },
@@ -90,7 +104,8 @@ export async function POST(request: Request) {
       }
     );
 
-    const data = await response.json();
+    const data =
+      await response.json();
 
     if (!response.ok) {
       console.error(
@@ -105,12 +120,16 @@ export async function POST(request: Request) {
             "PayPal could not complete the payment.",
         },
         {
-          status: response.status,
+          status:
+            response.status,
         }
       );
     }
 
-    if (data.status !== "COMPLETED") {
+    if (
+      data.status !==
+      "COMPLETED"
+    ) {
       console.error(
         "Unexpected PayPal order status:",
         data.status
@@ -121,7 +140,8 @@ export async function POST(request: Request) {
           success: false,
           message:
             "PayPal payment was not completed.",
-          status: data.status,
+          status:
+            data.status,
         },
         {
           status: 400,
@@ -129,12 +149,25 @@ export async function POST(request: Request) {
       );
     }
 
+    await prisma.order.update({
+      where: {
+        paypalOrderId:
+          orderID,
+      },
+      data: {
+        status: "paid",
+      },
+    });
+
     return NextResponse.json({
       success: true,
       orderID: data.id,
       status: data.status,
-      capture: data.purchase_units?.[0]
-        ?.payments?.captures?.[0] ?? null,
+      capture:
+        data.purchase_units?.[0]
+          ?.payments
+          ?.captures?.[0] ??
+        null,
     });
   } catch (error) {
     console.error(

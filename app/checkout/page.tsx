@@ -101,25 +101,25 @@ export default function CheckoutPage() {
     useState(10);
 
   const [checkout, setCheckout] = useState<Checkout>({
-    currentRankId: 0,
-    desiredRankId: 8,
+  serviceType: "rank-boost",
 
-    platform: "Steam",
-    gameMode: "2v2",
+  currentRankId: 0,
+  desiredRankId: 8,
 
-    extras: [],
+  platform: "Steam",
+  gameMode: "2v2",
 
-    orderInformation: {
-      inGameUsername: "",
-      preferredPlayTime: "Evening",
-      notes: "",
-    },
+  extras: [],
 
-    contactInformation: {
-      email: "",
-      discord: "",
-    },
-  });
+  orderInformation: {
+    notes: "",
+  },
+
+  contactInformation: {
+    email: "",
+    discord: "",
+  },
+});
 
   /*
    * -----------------------------------------
@@ -139,6 +139,10 @@ export default function CheckoutPage() {
       service === "placement-boost"
     ) {
       setServiceType(service);
+      setCheckout((prev) => ({
+      ...prev,
+      serviceType: service,
+      }));
     }
 
     const current = Number(
@@ -164,15 +168,17 @@ export default function CheckoutPage() {
         : [];
 
     setCheckout((prev) => ({
-      ...prev,
+    ...prev,
 
-      currentRankId: current,
-      desiredRankId: desired,
+    serviceType: service ?? "rank-boost",
 
-      platform,
-      gameMode: mode,
+    currentRankId: current,
+    desiredRankId: desired,
 
-      extras: selectedExtras,
+    platform,
+    gameMode: mode,
+
+    extras: selectedExtras,
     }));
 
     setRewardRank(
@@ -364,6 +370,13 @@ export default function CheckoutPage() {
               <CheckoutFooter
                 checkout={checkout}
                 price={totalPrice}
+                serviceType={serviceType}
+                rewardRank={rewardRank}
+                rewardWins={rewardWins}
+                tournamentRank={tournamentRank}
+                tournamentWins={tournamentWins}
+                placementRank={placementRank}
+                placementMatches={placementMatches}
               />
 
             </div>
@@ -373,8 +386,15 @@ export default function CheckoutPage() {
             <div className="sticky top-8 h-fit rounded-3xl border border-zinc-700 bg-zinc-800/70 p-8 backdrop-blur">
 
               <OrderSummary
+                serviceType={serviceType}
                 currentRank={currentRank.display}
                 desiredRank={desiredRank.display}
+                rewardRank={rewardRank}
+                rewardWins={rewardWins}
+                tournamentRank={tournamentRank}
+                tournamentWins={tournamentWins}
+                placementRank={placementRank}
+                placementMatches={placementMatches}
                 platform={checkout.platform}
                 gameMode={checkout.gameMode}
                 selectedExtras={checkout.extras}

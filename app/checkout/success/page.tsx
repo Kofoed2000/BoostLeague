@@ -19,12 +19,10 @@ export default function CheckoutSuccessPage() {
       <div className="mx-auto max-w-2xl px-6">
         <div className="rounded-3xl border border-zinc-800 bg-zinc-900/70 p-10 text-center backdrop-blur">
 
-          {/* Success Icon */}
           <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-green-500/20 text-4xl text-green-400">
             ✓
           </div>
 
-          {/* Title */}
           <h1 className="mt-8 text-4xl font-bold">
             Payment Successful!
           </h1>
@@ -34,7 +32,6 @@ export default function CheckoutSuccessPage() {
             boosting order has been received.
           </p>
 
-          {/* Order ID */}
           {orderId && (
             <div className="mt-8 rounded-2xl border border-zinc-800 bg-zinc-950 p-5">
               <p className="text-sm uppercase tracking-wider text-gray-500">
@@ -47,20 +44,44 @@ export default function CheckoutSuccessPage() {
             </div>
           )}
 
-          {/* Next Steps */}
-          <div className="mt-8 rounded-2xl bg-blue-500/10 p-6 text-left">
+          <div className="mt-8 rounded-2xl border border-blue-500/20 bg-blue-500/10 p-6 text-left">
             <h2 className="font-semibold text-blue-400">
               What happens next?
             </h2>
 
-            <p className="mt-2 text-sm leading-6 text-gray-400">
-              We will review your order and begin preparing
-              your boost. Keep an eye on your email or Discord
-              for updates.
+            <ol className="mt-4 space-y-3 text-sm text-gray-300">
+              <li>
+                <strong>1.</strong> Our team will review your
+                order.
+              </li>
+
+              <li>
+                <strong>2.</strong> We will contact you on
+                Discord using the username provided during
+                checkout.
+              </li>
+
+              <li>
+                <strong>3.</strong> You will receive
+                instructions on how to securely provide your
+                account login details.
+              </li>
+
+              <li>
+                <strong>4.</strong> Your boost will begin as
+                soon as everything is confirmed.
+              </li>
+            </ol>
+          </div>
+
+          <div className="mt-6 rounded-2xl border border-yellow-500/20 bg-yellow-500/10 p-5">
+            <p className="text-sm text-yellow-300">
+              Important: Never send your account login details
+              before being contacted by an official
+              BoostLeague team member.
             </p>
           </div>
 
-          {/* Back Home */}
           <Link
             href="/"
             className="

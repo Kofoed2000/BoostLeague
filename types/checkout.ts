@@ -1,4 +1,6 @@
 export type Checkout = {
+  serviceType: string;
+
   currentRankId: number;
   desiredRankId: number;
 
@@ -8,8 +10,6 @@ export type Checkout = {
   extras: string[];
 
   orderInformation: {
-    inGameUsername: string;
-    preferredPlayTime: string;
     notes: string;
   };
 

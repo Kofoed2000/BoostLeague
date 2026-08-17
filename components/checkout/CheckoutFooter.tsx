@@ -12,38 +12,56 @@ import { Checkout } from "@/types/checkout";
 type CheckoutFooterProps = {
   checkout: Checkout;
   price: number;
+
+  serviceType: string;
+
+  rewardRank?: string;
+  rewardWins?: number;
+
+  tournamentRank?: string;
+  tournamentWins?: number;
+
+  placementRank?: string;
+  placementMatches?: number;
+
   disabled?: boolean;
 };
 
 export default function CheckoutFooter({
   checkout,
   price,
+
+  serviceType,
+
+  rewardRank,
+  rewardWins,
+
+  tournamentRank,
+  tournamentWins,
+
+  placementRank,
+  placementMatches,
+
   disabled = false,
 }: CheckoutFooterProps) {
   const [error, setError] = useState("");
 
   function validateCheckout() {
-    if (!checkout.orderInformation.inGameUsername.trim()) {
-      setError("Please enter your in-game username.");
-      return false;
-    }
+  console.log("CHECKOUT:", checkout);
 
-    if (!checkout.contactInformation.email.trim()) {
-      setError("Please enter your email.");
-      return false;
-    }
-
-    if (checkout.currentRankId >= checkout.desiredRankId) {
-      setError(
-        "Desired rank must be higher than current rank."
-      );
-      return false;
-    }
-
-    setError("");
-
-    return true;
+  if (!checkout.contactInformation.email.trim()) {
+    setError("Please enter your email.");
+    return false;
   }
+
+  if (!checkout.contactInformation.discord.trim()) {
+    setError("Please enter your Discord username.");
+    return false;
+  }
+
+  setError("");
+  return true;
+}
 
   async function createOrder() {
     if (!validateCheckout()) {
@@ -57,7 +75,22 @@ export default function CheckoutFooter({
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(checkout),
+        body: JSON.stringify({
+          ...checkout,
+
+          serviceType,
+
+          rewardRank,
+          rewardWins,
+
+          tournamentRank,
+          tournamentWins,
+
+          placementRank,
+          placementMatches,
+
+          price,
+        }),
       }
     );
 
@@ -135,6 +168,15 @@ export default function CheckoutFooter({
             Payments are securely processed by PayPal.
           </p>
         </div>
+      </div>
+
+      <div className="mt-6 rounded-2xl border border-blue-500/20 bg-blue-500/5 p-4">
+        <p className="text-sm text-blue-300">
+          Login details are not required during checkout.
+          After payment, you will receive instructions on how
+          to securely provide your account information through
+          our customer chat system.
+        </p>
       </div>
 
       <div className="mt-8 border-t border-zinc-800 pt-8">
