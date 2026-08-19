@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import { rankHierarchy } from "@/data/rankHierarchy";
 
 import { rocketLeagueRanks } from "@/data/rocketLeagueRanks";
 
@@ -20,9 +21,6 @@ type PriceSummaryProps = {
 
   rewardRank: string;
   rewardWins: number;
-  rewardRankIcon: string;
-  desiredRewardRank: string;
-  desiredRewardRankIcon: string;
 
   tournamentRank: string;
   tournamentWins: number;
@@ -50,9 +48,6 @@ export default function PriceSummary({
 
   rewardRank,
   rewardWins,
-  rewardRankIcon,
-  desiredRewardRank,
-  desiredRewardRankIcon,
 
   tournamentRank,
   tournamentWins,
@@ -78,6 +73,10 @@ export default function PriceSummary({
 
   const placement = rocketLeagueRanks.find(
     (rank) => rank.display === placementRank
+  );
+
+  const rewardRankData = rankHierarchy.find(
+    (rank) => rank.name === rewardRank
   );
 
   const params = new URLSearchParams({
@@ -202,18 +201,14 @@ export default function PriceSummary({
         {serviceType === "reward-wins" && (
           <>
             <div className="rounded-2xl border border-zinc-700 bg-zinc-900 p-5">
-
               <p className="text-sm uppercase tracking-wider text-gray-500">
                 Current Reward Rank
               </p>
 
               <div className="mt-4 flex items-center gap-4">
-
-                {rewardRankIcon && (
+                {rewardRankData && (
                   <Image
-                    src={`/ranks/Season_reward_level_${rewardRank
-                      .toLowerCase()
-                      .replaceAll(" ", "_")}.webp`}
+                    src={rewardRankData.icon}
                     alt={rewardRank}
                     width={55}
                     height={55}
@@ -223,67 +218,24 @@ export default function PriceSummary({
                 <p className="text-lg font-semibold">
                   {rewardRank}
                 </p>
-
               </div>
-
             </div>
 
-            {desiredRewardRank && (
-              <>
-                <div className="flex justify-center text-3xl text-blue-500">
-                  ↓
-                </div>
-
-                <div className="rounded-2xl border border-blue-500/30 bg-blue-500/5 p-5">
-
-                  <p className="text-sm uppercase tracking-wider text-gray-500">
-                    Desired Reward Rank
-                  </p>
-
-                  <div className="mt-4 flex items-center gap-4">
-
-                    {desiredRewardRankIcon && (
-                      <Image
-                        src={`/ranks/Season_reward_level_${desiredRewardRank
-                          .toLowerCase()
-                          .replaceAll(" ", "_")}.webp`}
-                        alt={desiredRewardRank}
-                        width={55}
-                        height={55}
-                      />
-                    )}
-
-                    <p className="text-lg font-semibold">
-                      {desiredRewardRank}
-                    </p>
-
-                  </div>
-
-                </div>
-              </>
-            )}
-
             <div className="rounded-2xl border border-blue-500/30 bg-blue-500/5 p-5">
-
               <p className="text-sm uppercase tracking-wider text-gray-500">
                 Rewards
               </p>
 
               <div className="mt-4 flex items-center justify-between">
-
                 <p className="text-lg font-semibold">
-                  {rewardWins} Win
-                  {rewardWins !== 1 ? "s" : ""}
+                  {rewardWins} Win{rewardWins !== 1 ? "s" : ""}
                 </p>
 
                 <p className="text-2xl font-bold text-blue-500">
                   {rewardWins}
                 </p>
-
               </div>
-
             </div>
-
           </>
         )}
 

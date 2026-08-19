@@ -1,6 +1,8 @@
 "use client";
+
 import { rocketLeagueRanks } from "@/data/rocketLeagueRanks";
 import { useState } from "react";
+import RewardRankPicker from "./RewardRankPicker";
 
 import RankPicker from "./RankPicker";
 import PlatformPicker from "./PlatformPicker";
@@ -17,6 +19,7 @@ import {
   calculatePrice,
   getRankById,
 } from "@/lib/rocketLeague";
+import { useEffect } from "react";
 
 type ServiceType =
   | "rank-boost"
@@ -141,19 +144,40 @@ export default function BoostCalculator() {
     (rank) => rank.name === calculator.rewardRank
   );
 
-  const rewardRankIndex =
-  rankHierarchy.findIndex(
-    (rank) =>
-      rank.name === calculator.rewardRank
+  const rewardRankIndex = rankHierarchy.findIndex(
+    (rank) => rank.name === calculator.rewardRank
   );
 
-const desiredRewardRank =
-  rankHierarchy[
+  const minimumCurrentRankGroup =
+    rankHierarchy[
     Math.min(
       rewardRankIndex + 1,
       rankHierarchy.length - 1
     )
-  ];
+    ];
+
+  const minimumCurrentRankId =
+    rocketLeagueRanks.find(
+      (rank) =>
+        rank.rank ===
+        minimumCurrentRankGroup.tiers[0]
+    )?.id ?? 0;
+
+  useEffect(() => {
+    if (
+      calculator.currentRankId <
+      minimumCurrentRankId
+    ) {
+      setCalculator((prev) => ({
+        ...prev,
+        currentRankId:
+          minimumCurrentRankId,
+      }));
+    }
+  }, [
+    calculator.rewardRank,
+    minimumCurrentRankId,
+  ]);
 
   const selectedTournamentRank = rankHierarchy.find(
     (rank) =>
@@ -161,30 +185,30 @@ const desiredRewardRank =
   );
 
   const rewardCurrentRank =
-  rocketLeagueRanks.find(
-    (rank) =>
-      rank.id === calculator.currentRankId
-  );
+    rocketLeagueRanks.find(
+      (rank) =>
+        rank.id === calculator.currentRankId
+    );
 
-const currentRankIndex =
-  rankHierarchy.findIndex((rank) =>
-    currentRank?.rank.startsWith(rank.name)
-  );
+  const currentRankIndex =
+    rankHierarchy.findIndex((rank) =>
+      currentRank?.rank.startsWith(rank.name)
+    );
 
-const availableRewardRanks =
-  currentRankIndex >= 0
-    ? rankHierarchy.slice(
+  const availableRewardRanks =
+    currentRankIndex >= 0
+      ? rankHierarchy.slice(
         0,
         currentRankIndex + 1
       )
-    : rankHierarchy;
+      : rankHierarchy;
 
   const selectedPlacementRank = rankHierarchy.find(
-  (rank) =>
-    rank.tiers.includes(
-      calculator.placementRank
-    )
-);
+    (rank) =>
+      rank.tiers.includes(
+        calculator.placementRank
+      )
+  );
 
   /*
    * -----------------------------------------
@@ -217,7 +241,7 @@ const availableRewardRanks =
 
   const tournamentPricePerWin =
     tournamentPrices[
-      calculator.tournamentRank
+    calculator.tournamentRank
     ] ?? 10;
 
   const tournamentWinsBasePrice =
@@ -257,22 +281,22 @@ const availableRewardRanks =
     serviceType === "tournament-wins"
       ? 1
       : calculator.gameMode.priceMultiplier *
-        calculator.selectedExtras.reduce(
-          (total, id) => {
-            const extra = extras.find(
-              (extra) => extra.id === id
-            );
+      calculator.selectedExtras.reduce(
+        (total, id) => {
+          const extra = extras.find(
+            (extra) => extra.id === id
+          );
 
-            if (!extra) {
-              return total;
-            }
+          if (!extra) {
+            return total;
+          }
 
-            return (
-              total * extra.priceMultiplier
-            );
-          },
-          1
-        );
+          return (
+            total * extra.priceMultiplier
+          );
+        },
+        1
+      );
 
   /*
    * -----------------------------------------
@@ -316,12 +340,12 @@ const availableRewardRanks =
       selectedExtras:
         prev.selectedExtras.includes(id)
           ? prev.selectedExtras.filter(
-              (extra) => extra !== id
-            )
+            (extra) => extra !== id
+          )
           : [
-              ...prev.selectedExtras,
-              id,
-            ],
+            ...prev.selectedExtras,
+            id,
+          ],
     }));
   }
 
@@ -394,10 +418,9 @@ const availableRewardRanks =
               transition-all
               duration-300
 
-              ${
-                serviceType === "rank-boost"
-                  ? "border-blue-500 bg-blue-500/10 text-white"
-                  : "border-zinc-800 bg-zinc-900/70 text-gray-400 hover:border-zinc-600 hover:text-white"
+              ${serviceType === "rank-boost"
+                ? "border-blue-500 bg-blue-500/10 text-white"
+                : "border-zinc-800 bg-zinc-900/70 text-gray-400 hover:border-zinc-600 hover:text-white"
               }
             `}
           >
@@ -426,10 +449,9 @@ const availableRewardRanks =
               transition-all
               duration-300
 
-              ${
-                serviceType === "reward-wins"
-                  ? "border-blue-500 bg-blue-500/10 text-white"
-                  : "border-zinc-800 bg-zinc-900/70 text-gray-400 hover:border-zinc-600 hover:text-white"
+              ${serviceType === "reward-wins"
+                ? "border-blue-500 bg-blue-500/10 text-white"
+                : "border-zinc-800 bg-zinc-900/70 text-gray-400 hover:border-zinc-600 hover:text-white"
               }
             `}
           >
@@ -458,10 +480,9 @@ const availableRewardRanks =
               transition-all
               duration-300
 
-              ${
-                serviceType === "tournament-wins"
-                  ? "border-blue-500 bg-blue-500/10 text-white"
-                  : "border-zinc-800 bg-zinc-900/70 text-gray-400 hover:border-zinc-600 hover:text-white"
+              ${serviceType === "tournament-wins"
+                ? "border-blue-500 bg-blue-500/10 text-white"
+                : "border-zinc-800 bg-zinc-900/70 text-gray-400 hover:border-zinc-600 hover:text-white"
               }
             `}
           >
@@ -490,10 +511,9 @@ const availableRewardRanks =
               transition-all
               duration-300
 
-              ${
-                serviceType === "placement-boost"
-                  ? "border-blue-500 bg-blue-500/10 text-white"
-                  : "border-zinc-800 bg-zinc-900/70 text-gray-400 hover:border-zinc-600 hover:text-white"
+              ${serviceType === "placement-boost"
+                ? "border-blue-500 bg-blue-500/10 text-white"
+                : "border-zinc-800 bg-zinc-900/70 text-gray-400 hover:border-zinc-600 hover:text-white"
               }
             `}
           >
@@ -582,74 +602,36 @@ const availableRewardRanks =
 
                   <div>
                     <div>
-                        <label className="mb-3 block text-lg font-semibold">
-                          Current Rank
-                        </label>
+                      <label className="mb-3 block text-lg font-semibold">
+                        Current Rank
+                      </label>
 
-                        <RankPicker
-                          value={calculator.currentRankId}
-                          onChange={(value) =>
-                            setCalculator((prev) => ({
+                      <RankPicker
+                        value={calculator.currentRankId}
+                        minimumRankId={
+                          minimumCurrentRankId - 1
+                        }
+                        onChange={(value) =>
+                          setCalculator((prev) => ({
                             ...prev,
                             currentRankId: value,
-                        }))
-                      }
-                    />
-                  </div>
+                          }))
+                        }
+                      />
+                    </div>
                     <label className="mb-3 block text-lg font-semibold">
                       Current Reward Rank
                     </label>
 
-                    <div className="relative">
-
-                      <select
-                        value={
-                          calculator.rewardRank
-                        }
-                        onChange={(event) =>
-                          setCalculator(
-                            (prev) => ({
-                              ...prev,
-                              rewardRank:
-                                event.target.value,
-                            })
-                          )
-                        }
-                        className="
-                          w-full
-                          appearance-none
-                          rounded-2xl
-                          border
-                          border-zinc-700
-                          bg-zinc-900
-                          px-5
-                          py-4
-                          pr-12
-                          text-white
-                          outline-none
-                          transition
-                          focus:border-blue-500
-                        "
-                      >
-
-                        {availableRewardRanks.map(
-                          (rank) => (
-                            <option
-                              key={rank.name}
-                              value={rank.name}
-                            >
-                              {rank.name}
-                            </option>
-                          )
-                        )}
-
-                      </select>
-
-                      <span className="pointer-events-none absolute right-5 top-1/2 -translate-y-1/2 text-gray-500">
-                        ▼
-                      </span>
-
-                    </div>
+                    <RewardRankPicker
+                      value={calculator.rewardRank}
+                      onChange={(value) =>
+                        setCalculator((prev) => ({
+                          ...prev,
+                          rewardRank: value,
+                        }))
+                      }
+                    />
 
                   </div>
 
@@ -801,11 +783,10 @@ const availableRewardRanks =
                               font-bold
                               transition-all
 
-                              ${
-                                calculator.tournamentWins ===
+                              ${calculator.tournamentWins ===
                                 wins
-                                  ? "border-blue-500 bg-blue-600 text-white"
-                                  : "border-zinc-700 bg-zinc-900 text-gray-400 hover:border-zinc-500 hover:text-white"
+                                ? "border-blue-500 bg-blue-600 text-white"
+                                : "border-zinc-700 bg-zinc-900 text-gray-400 hover:border-zinc-500 hover:text-white"
                               }
                             `}
                           >
@@ -930,11 +911,10 @@ const availableRewardRanks =
                             font-bold
                             transition-all
 
-                            ${
-                              calculator.placementMatches ===
+                            ${calculator.placementMatches ===
                               matches
-                                ? "border-blue-500 bg-blue-600 text-white"
-                                : "border-zinc-700 bg-zinc-900 text-gray-400 hover:border-zinc-500 hover:text-white"
+                              ? "border-blue-500 bg-blue-600 text-white"
+                              : "border-zinc-700 bg-zinc-900 text-gray-400 hover:border-zinc-500 hover:text-white"
                             }
                           `}
                         >
@@ -1047,17 +1027,8 @@ const availableRewardRanks =
               rewardRank={
                 calculator.rewardRank
               }
-              desiredRewardRank={
-                desiredRewardRank?.name ?? ""
-              }
-              desiredRewardRankIcon={
-                desiredRewardRank?.icon ?? ""
-              }
               rewardWins={
                 calculator.rewardWins
-              }
-              rewardRankIcon={
-                selectedRewardRank?.icon ?? ""
               }
 
               tournamentRank={
