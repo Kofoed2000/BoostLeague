@@ -32,9 +32,16 @@ export default async function OrderPage({
       <div className="space-y-6">
 
         <div>
-          <p className="mb-3">
-            <strong>Status:</strong>{" "}
-            {order.status}
+          <p className="mb-3 flex items-center gap-2">
+            <strong>Status:</strong>
+
+            <span
+              className={`px-2 py-1 rounded-md text-sm font-medium ${getStatusClass(
+                order.status
+              )}`}
+            >
+              {order.status}
+            </span>
           </p>
 
           <StatusButtons
@@ -132,4 +139,26 @@ export default async function OrderPage({
       </div>
     </div>
   );
+}
+
+function getStatusClass(status: string) {
+  switch (status) {
+    case "pending":
+      return "bg-yellow-500/20 text-yellow-400";
+
+    case "paid":
+      return "bg-blue-500/20 text-blue-400";
+
+    case "in-progress":
+      return "bg-orange-500/20 text-orange-400";
+
+    case "completed":
+      return "bg-green-500/20 text-green-400";
+
+    case "cancelled":
+      return "bg-red-500/20 text-red-400";
+
+    default:
+      return "bg-gray-500/20 text-gray-400";
+  }
 }

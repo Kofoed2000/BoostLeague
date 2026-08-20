@@ -17,11 +17,12 @@ export const metadata: Metadata = {
   description: "Professional Rocket League boosting with experienced boosters. Fast, safe and anonymous.",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+
   return (
     <html
       lang="en"
