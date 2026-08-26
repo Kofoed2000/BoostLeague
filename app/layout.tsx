@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+
+import Providers from "@/components/Providers";
+
 import "./globals.css";
 
 const geistSans = Geist({
@@ -14,23 +17,25 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "BoostLeague | Rocket League Boosting",
-  description: "Professional Rocket League boosting with experienced boosters. Fast, safe and anonymous.",
+  description:
+    "Professional Rocket League boosting with experienced boosters. Fast, safe and anonymous.",
 };
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-
   return (
     <html
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-[#09090b] text-white antialiased">
-  {children}
-</body>
+        <Providers>
+          {children}
+        </Providers>
+      </body>
     </html>
   );
 }

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
+import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
-
 import { extras } from "@/data/extras";
 import {
   calculatePrice,
@@ -60,6 +60,8 @@ async function getPayPalAccessToken() {
 
 export async function POST(request: Request) {
   try {
+    const session = await auth();
+
     const checkout = await request.json();
 
     if (!checkout) {
@@ -70,6 +72,19 @@ export async function POST(request: Request) {
         },
         {
           status: 400,
+        }
+      );
+    }
+
+    if (!session?.user?.discordId) {
+      return NextResponse.json(
+        {
+          success: false,
+          message:
+            "You must log in with Discord before placing an order.",
+        },
+        {
+          status: 401,
         }
       );
     }
@@ -246,7 +261,7 @@ export async function POST(request: Request) {
               {
                 description:
                   serviceType ===
-                  "rank-boost"
+                    "rank-boost"
                     ? `Rocket League Boost - ${currentRank?.display} to ${desiredRank?.display}`
                     : `Rocket League ${serviceType}`,
 
@@ -301,87 +316,87 @@ export async function POST(request: Request) {
 
     const orderNumber = `BL-${Date.now()}`;
 
-const orderData: any = {
-  orderNumber,
+    const orderData: any = {
+      orderNumber,
 
-  serviceType,
+      serviceType,
 
-  email:
-    contactInformation.email,
+      email:
+        contactInformation.email,
 
-  discord:
-    contactInformation.discord,
+      discord:
+        contactInformation.discord,
 
-  platform,
+      platform,
 
-  gameMode:
-    gameMode || null,
+      gameMode:
+        gameMode || null,
 
-  extras:
-    selectedExtras?.length
-      ? selectedExtras.join(",")
-      : null,
+      extras:
+        selectedExtras?.length
+          ? selectedExtras.join(",")
+          : null,
 
-  notes:
-    orderInformation?.notes?.trim() ||
-    null,
+      notes:
+        orderInformation?.notes?.trim() ||
+        null,
 
-  price: totalPrice,
+      price: totalPrice,
 
-  paypalOrderId:
-    paypalData.id,
+      paypalOrderId:
+        paypalData.id,
 
-  status: "pending",
-};
+      status: "pending",
+    };
 
-if (serviceType === "rank-boost") {
-  Object.assign(orderData, {
-    currentRank:
-      currentRank?.display ??
-      null,
+    if (serviceType === "rank-boost") {
+      Object.assign(orderData, {
+        currentRank:
+          currentRank?.display ??
+          null,
 
-    desiredRank:
-      desiredRank?.display ??
-      null,
-  });
-}
+        desiredRank:
+          desiredRank?.display ??
+          null,
+      });
+    }
 
-if (serviceType === "reward-wins") {
-  Object.assign(orderData, {
-    currentRank:
-      currentRank?.display ?? null,
+    if (serviceType === "reward-wins") {
+      Object.assign(orderData, {
+        currentRank:
+          currentRank?.display ?? null,
 
-    rewardRank:
-      rewardRank || null,
+        rewardRank:
+          rewardRank || null,
 
-    rewardWins:
-      rewardWins || null,
-  });
-}
+        rewardWins:
+          rewardWins || null,
+      });
+    }
 
-if (serviceType === "placement-boost") {
-  Object.assign(orderData, {
-    placementRank:
-      placementRank || null,
+    if (serviceType === "placement-boost") {
+      Object.assign(orderData, {
+        placementRank:
+          placementRank || null,
 
-    placementMatches:
-      placementMatches || null,
-  });
-}
+        placementMatches:
+          placementMatches || null,
+      });
+    }
 
-if (serviceType === "tournament-wins") {
-  Object.assign(orderData, {
-    tournamentRank:
-      tournamentRank || null,
+    if (serviceType === "tournament-wins") {
+      Object.assign(orderData, {
+        tournamentRank:
+          tournamentRank || null,
 
-    tournamentWins:
-      tournamentWins || null,
-  });
-}
+        tournamentWins:
+          tournamentWins || null,
+      });
+    }
 
-await prisma.order.create({
-  data: orderData,
-});
+    await prisma.order.create({
+      data: orderData,
+    });
 
     return NextResponse.json({
       success: true,

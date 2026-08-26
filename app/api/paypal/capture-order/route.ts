@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { prisma } from "@/lib/prisma";
+import { sendNewOrderMessage } from "@/lib/discord";
 
 const PAYPAL_API_URL =
   "https://api-m.sandbox.paypal.com";
@@ -68,7 +69,7 @@ export async function POST(
 
     if (
       typeof orderID !==
-        "string" ||
+      "string" ||
       !orderID.trim()
     ) {
       return NextResponse.json(
@@ -149,14 +150,24 @@ export async function POST(
       );
     }
 
-    await prisma.order.update({
-      where: {
-        paypalOrderId:
-          orderID,
-      },
-      data: {
-        status: "paid",
-      },
+    const order =
+      await prisma.order.update({
+        where: {
+          paypalOrderId:
+            orderID,
+        },
+        data: {
+          status: "paid",
+        },
+      });
+
+    await sendNewOrderMessage({
+      id: order.id,
+      orderNumber: order.orderNumber,
+      serviceType: order.serviceType,
+      discord: order.discord,
+      platform: order.platform,
+      price: Number(order.price),
     });
 
     return NextResponse.json({
